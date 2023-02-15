@@ -51,16 +51,15 @@ class SendSmsAction extends Action implements ShouldQueue
                 
                
                 $result=$data->getData();
-                return $result->{'message'};
-                //  if($result->{'status'} == 'success'){
-                //     return Action::message("SMS sent successfully");
+                 if($result->{'status'} == 'success'){
+                    return Action::message("SMS sent successfully");
 
-                // }
-                // else{
-                //     $this->markAsFailed($model, $result->{'status'});
+                }
+                else{
+                    $this->markAsFailed($model, $result->{'status'});
 
-                //     return Action::danger("Failed: ".$result->{'status'});
-                // }
+                    return Action::danger("Failed: ".$result->{'status'});
+                }
             }
             catch (Exception $e) {
                 $this->markAsFailed($model, $e);
