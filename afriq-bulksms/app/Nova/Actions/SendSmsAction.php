@@ -5,6 +5,7 @@ namespace App\Nova\Actions;
 use Afriq\CharCount\CharCount;
 use App\Http\Controllers\Api\SendSmsController;
 use App\Models\Sms;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -18,7 +19,7 @@ use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class SendSmsAction extends Action
+class SendSmsAction extends Action implements ShouldQueue
 {
     use InteractsWithQueue, Queueable;
 
@@ -31,25 +32,41 @@ class SendSmsAction extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        
-        // foreach($models as $model){
 
-            $response = new SendSmsController();
-            $response->sendSms($fields->type, $fields->source, $fields->destination,$fields->message, $fields->schedule);
-            Sms::create(
-                [
-                    'type' => $fields->type,
-                    'source' => $fields->source,
-                    'destination' => $fields->destination,
-                    'message' => $fields->message,
-                    'schedule' => $fields->schedule,
-                    'scheduled' => $fields->scheduled
-                ]
-            );
-            return Action::message("SMS was sent succesfully");
-        // }
+        collect($models)->map(function($model){  
+            try{
+                    
+                $response = new SendSmsController();
+                $data = $response->sendSms($model->type, $model->source, $model->destination,$model->message, $model->schedule, $model->scheduled);
+                // Sms::create(
+                //     [
+                //         'type' => $model->type,
+                //         'source' => $model->source,
+                //         'destination' => $model->destination,
+                //         'message' => $model->message,
+                //         'schedule' => $model->schedule,
+                //         'scheduled' => $model->scheduled
+                //     ]
+                // );
+                
+               
+                $result=$data->getData();
+                return $result->{'message'};
+                //  if($result->{'status'} == 'success'){
+                //     return Action::message("SMS sent successfully");
+
+                // }
+                // else{
+                //     $this->markAsFailed($model, $result->{'status'});
+
+                //     return Action::danger("Failed: ".$result->{'status'});
+                // }
+            }
+            catch (Exception $e) {
+                $this->markAsFailed($model, $e);
+            }
+        });
     }
-
     /**
      * Get the fields available on the action.
      *
@@ -59,31 +76,6 @@ class SendSmsAction extends Action
     public function fields(NovaRequest $request)
     {
         return [
-            // ID::make()->sortable(),
-            Select::make('Type')->options(
-                [
-                    0 => 'Plain Text (GSM)',
-                    1 => 'Flash (GSM)',
-                    2 => 'Unicode',
-                    3 => 'Reserved',
-                    5 => 'Plain Text (ISO-8559-1)',
-                    6 => 'Unicode Flash',
-                    7 => 'Flash (IS0-8559-1)'   
-                ]
-            )->rules('required')->required()->displayUsingLabels(),
-            Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
-            Text::make('Destination')->sortable()->rules('required', 'max:12',  'starts_with:254')->required()->help(
-                'seperate multiple mobile numbers using a comma (,) or upload csv file'
-            )->placeholder('e.g 254712345678'),
-            File::make('Destination File')
-                ->disk('public')
-                ->acceptedTypes('.csv')
-                ->nullable(),
-            Boolean::make('Schedule', 'schedule'),
-            DateTime::make('Scheduled'),
-            CharCount::make('Message')
-            ->rules('required')
-            ->required(),
         ];
     }
 }

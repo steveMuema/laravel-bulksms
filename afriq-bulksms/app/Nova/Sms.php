@@ -13,8 +13,15 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\DateTime;
+
 class Sms extends Resource
 {
+    public static function createButtonLabel()
+    {
+        return 'Save SMS';
+    }
     /**
      * The model the resource corresponds to.
      *
@@ -65,6 +72,8 @@ class Sms extends Resource
             CharCount::make('Message')
             ->rules('required')
             ->required(),
+            Boolean::make('Schedule', 'schedule')->trueValue('true')->falseValue('false'),
+            DateTime::make('Scheduled'),
         ];
     }
 
@@ -110,7 +119,8 @@ class Sms extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            Actions\SendSmsAction::make()->standalone()->confirmButtonText('Send SMS')->confirmText('')
+            Actions\SendSingleSms::make()->standalone()->confirmButtonText('Send SMS')->confirmText(''),
+            Actions\SendSmsAction::make()->showOnTableRow()->confirmButtonText('Send SMS')->confirmText('Do you want to send SMS to the selected row(s)?')
         ];
     }
 }

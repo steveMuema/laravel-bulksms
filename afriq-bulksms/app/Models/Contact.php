@@ -12,6 +12,6 @@ class Contact extends Model
         return $this->belongsTo('App\Models\User');
     }
     public function addressBook(){
-        return $this->belongsTo('App\Models\AddressBook ');
+        return $this->belongsTo('App\Models\AddressBook');
     }
 }
