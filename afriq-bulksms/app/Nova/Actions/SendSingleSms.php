@@ -3,6 +3,7 @@
 namespace App\Nova\Actions;
 
 use Afriq\CharCount\CharCount;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Api\SendSmsController;
 use App\Models\Contact;
 use App\Models\Sms;
@@ -38,7 +39,7 @@ class SendSingleSms extends Action
         // foreach($models as $model){
             
             $response = new SendSmsController();
-            $data = $response->sendSms($fields->type, $fields->source, $fields->destination,$fields->message, $fields->schedule, $fields->scheduled);
+            $data = $response->sendSms($fields->type, $fields->source, $fields->destination,$fields->message, $fields->schedule, $fields->scheduled, $fields->destination_file);
             Sms::create(
                 [
                     'type' => $fields->type,
@@ -46,7 +47,8 @@ class SendSingleSms extends Action
                     'destination' => $fields->destination,
                     'message' => $fields->message,
                     'schedule' => $fields->schedule,
-                    'scheduled' => $fields->scheduled
+                    'scheduled' => $fields->scheduled,
+                    'destination_file' => $fields->destination_file
                 ]
             );
             return Action::message($data);
@@ -76,18 +78,20 @@ class SendSingleSms extends Action
                 ]
             )->rules('required')->required()->displayUsingLabels(),
             Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
-            Text::make('Destination')->sortable()->rules('required', 'max:12',  'starts_with:254')->required()->help(
+            Text::make('Destination')->sortable()->rules('required', 'max:12',  'starts_with:254', 'nullable')->nullable()->help(
                 'seperate multiple mobile numbers using a comma (,) or upload csv file'
             )->placeholder('e.g 254712345678')->suggestions($list_contacts),
-            File::make('Destination File')
-                ->disk('public')
-                ->acceptedTypes('.csv')
-                ->nullable(),
+            File::make('Destination File', 'destination_file')
+                ->acceptedTypes('.csv, .xlsx')
+                ->storeAs(function (Request $request) {
+                    return $request->destination_file->getClientOriginalName();
+                })
+                ->nullable()->help('Ensure your file has a column with header "phone_number"'),
             Boolean::make('Schedule', 'schedule')->trueValue('true')->falseValue('false'),
             DateTime::make('Scheduled'),
             CharCount::make('Message')
             ->rules('required')
             ->required(),
-        ];
+        ];  
     }
 }

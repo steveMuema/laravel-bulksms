@@ -15,6 +15,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\File;
 
 class Sms extends Resource
 {
@@ -68,7 +69,13 @@ class Sms extends Resource
                 ]
             )->rules('required')->required()->displayUsingLabels(),
             Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
-            Text::make('Destination')->sortable()->rules('required', 'max:12',  'starts_with:254')->required(),
+            Text::make('Destination')->sortable()->rules('max:12',  'starts_with:254', 'nullable')->nullable(),
+            File::make('Destination File', 'destination_file')
+                ->acceptedTypes('.csv, .xlsx')
+                ->storeAs(function (Request $request) {
+                    return $request->destination_file->getClientOriginalName();
+                })
+                ->nullable()->help('Ensure your file has a column with header "phone_number"'),
             CharCount::make('Message')
             ->rules('required')
             ->required(),
@@ -119,8 +126,8 @@ class Sms extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            Actions\SendSingleSms::make()->standalone()->confirmButtonText('Send SMS')->confirmText(''),
-            Actions\SendSmsAction::make()->showOnTableRow()->confirmButtonText('Send SMS')->confirmText('Do you want to send SMS to the selected row(s)?')
+            Actions\SendSingleSms::make()->standalone()->confirmButtonText('Send SMS')->confirmText('Create and save a message to send to your customers below'),
+            Actions\SendSmsAction::make()->confirmButtonText('Send SMS')->confirmText('Do you want to send SMS to the selected row(s)?')
         ];
     }
 }
