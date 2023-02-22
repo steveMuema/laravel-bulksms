@@ -19,7 +19,7 @@ use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class SendSmsAction extends Action implements ShouldQueue
+class SendSmsAction extends Action
 {
     use InteractsWithQueue, Queueable;
 
@@ -33,39 +33,43 @@ class SendSmsAction extends Action implements ShouldQueue
     public function handle(ActionFields $fields, Collection $models)
     {
 
-        collect($models)->map(function($model){  
-            try{
+        $responses = collect();
+        foreach($models as $model){  
                     
-                $response = new SendSmsController();
-                $data = $response->sendSms($model->type, $model->source, $model->destination,$model->message, $model->schedule, $model->scheduled);
-                // Sms::create(
-                //     [
-                //         'type' => $model->type,
-                //         'source' => $model->source,
-                //         'destination' => $model->destination,
-                //         'message' => $model->message,
-                //         'schedule' => $model->schedule,
-                //         'scheduled' => $model->scheduled
-                //     ]
-                // );
-                
-               
-                $result=$data->getData();
-                 if($result->{'status'} == 'success'){
-                    return Action::message("SMS sent successfully");
+            $result = new SendSmsController();
+            $data = $result->sendSms($model->type, $model->source, $model->destination,$model->message, $model->schedule, $model->scheduled, $model->destination_file);
+             if($data == 'success'){
+                $response = Action::message("SMS sent successfully");
 
-                }
-                else{
-                    $this->markAsFailed($model, $result->{'status'});
-
-                    return Action::danger("Failed: ".$result->{'status'});
-                }
             }
-            catch (Exception $e) {
-                $this->markAsFailed($model, $e);
-            }
-        });
+            else{
+                // $model->markAsFailed();
+                $this->markAsFailed($model, $data);
+                $response = Action::danger("Error: ".$data);
+            }            
+             // Add the response to the collection
+            $responses->push($response);
+        }
+        return $responses;
     }
+    /**
+     * Handle chunk results.
+     *
+     * @param  \Laravel\Nova\Fields\ActionFields  $fields
+     * @param  array  $results
+     *
+     * @return mixed
+     */
+    // public function handleResult(ActionFields $fields, $results)
+    // {
+    //     $models = collect($results)->flatten();
+
+    //     // dispatch(new GenerateReport($models));
+    //     // dd($results);
+
+    //     return Action::message($models->count());
+    // }
+
     /**
      * Get the fields available on the action.
      *

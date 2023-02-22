@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 class Sms extends Model
 {
     use HasFactory, Actionable, Notifiable;
-    protected $fillable = [ 'type', 'source', 'destination', 'message', 'scheduled', 'schedule'];
+    protected $fillable = [ 'type', 'source', 'destination', 'message', 'scheduled', 'schedule', 'destination_file'];
     protected $casts = [
         'scheduled' => 'datetime'
     ];
