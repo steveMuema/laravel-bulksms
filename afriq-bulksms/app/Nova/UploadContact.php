@@ -2,26 +2,28 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\BelongsTo;
+use App\Nova\Actions\ImportExcelContacts;
+use Illuminate\Http\Request;
+use Laravel\Nova\Actions\Action;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Contact extends Resource
+class UploadContact extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\App\Models\Contact>
+     * @var class-string<\App\Models\UploadContact>
      */
-    public static $model = \App\Models\Contact::class;
+    public static $model = \App\Models\UploadContact::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'phone_number';
+    public static $title = 'id';
 
     /**
      * The columns that should be searched.
@@ -29,7 +31,7 @@ class Contact extends Resource
      * @var array
      */
     public static $search = [
-        'id','name','phone_number'
+        'id',
     ];
 
     /**
@@ -42,10 +44,13 @@ class Contact extends Resource
     {
         return [
             ID::make()->sortable(),
-            Text::make('Name')->required()->rules('required'),
-            Text::make('Phone Number')->required()->rules('required'),
-            BelongsTo::make('Address Book'),
-            BelongsTo::make('User')
+            File::make('File Path')
+                ->acceptedTypes('.csv, .xlsx')
+                ->storeAs(function (Request $request) {
+                    return $request->file_path->getClientOriginalName();
+                })->showOnIndex()
+                ->nullable(),
+            // Action::make('Import CSV')->onlyOnDetail()->action(new ImportExcelContacts),
         ];
     }
 
@@ -91,8 +96,7 @@ class Contact extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            Actions\ImportExcelContacts::make()->standalone()->confirmButtonText('Import Contacts')->confirmText('Upload the excel file with your list of contacts below:'),
-
+            Actions\ImportExcelContacts::make()->standalone()->confirmButtonText('Import Contacts'),
         ];
     }
 }

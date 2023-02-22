@@ -19,7 +19,7 @@ use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class SendSmsAction extends Action
+class SendBulkSms extends Action
 {
     use InteractsWithQueue, Queueable;
 
@@ -40,7 +40,6 @@ class SendSmsAction extends Action
             $data = $result->sendSms($model->type, $model->source, $model->destination,$model->message, $model->schedule, $model->scheduled, $model->destination_file);
              if($data == 'success'){
                 $response = Action::message("SMS sent successfully");
-
             }
             else{
                 // $model->markAsFailed();

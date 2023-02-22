@@ -8,16 +8,12 @@ use App\Http\Controllers\Api\SendSmsController;
 use App\Models\Contact;
 use App\Models\Sms;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -78,15 +74,15 @@ class SendSingleSms extends Action
                 ]
             )->rules('required')->required()->displayUsingLabels(),
             Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
-            Text::make('Destination')->sortable()->rules('required', 'max:12',  'starts_with:254', 'nullable')->nullable()->help(
+            Text::make('Destination')->sortable()->rules( 'max:12',  'starts_with:254', 'nullable')->nullable()->help(
                 'seperate multiple mobile numbers using a comma (,) or upload csv file'
             )->placeholder('e.g 254712345678')->suggestions($list_contacts),
-            File::make('Destination File', 'destination_file')
-                ->acceptedTypes('.csv, .xlsx')
-                ->storeAs(function (Request $request) {
-                    return $request->destination_file->getClientOriginalName();
-                })
-                ->nullable()->help('Ensure your file has a column with header "phone_number"'),
+            // File::make('Destination File', 'destination_file')
+            //     ->acceptedTypes('.csv, .xlsx')
+            //     ->storeAs(function (Request $request) {
+            //         return $request->destination_file->getClientOriginalName();
+            //     })
+            //     ->nullable()->help('Ensure your file has a column with header "phone_number"'),
             Boolean::make('Schedule', 'schedule')->trueValue('true')->falseValue('false'),
             DateTime::make('Scheduled'),
             CharCount::make('Message')

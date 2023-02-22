@@ -67,7 +67,7 @@ class Sms extends Resource
                     6 => 'Unicode Flash',
                     7 => 'Flash (IS0-8559-1)'   
                 ]
-            )->rules('required')->required()->displayUsingLabels(),
+            )->rules('required')->required()->displayUsingLabels()->hideFromIndex(),
             Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
             Text::make('Destination')->sortable()->rules('max:12',  'starts_with:254', 'nullable')->nullable(),
             File::make('Destination File', 'destination_file')
@@ -127,7 +127,7 @@ class Sms extends Resource
     {
         return [
             Actions\SendSingleSms::make()->standalone()->confirmButtonText('Send SMS')->confirmText('Create and save a message to send to your customers below'),
-            Actions\SendSmsAction::make()->confirmButtonText('Send SMS')->confirmText('Do you want to send SMS to the selected row(s)?')
+            Actions\SendBulkSms::make()->confirmButtonText('Send SMS')->confirmText('Do you want to send SMS to the selected row(s)?')
         ];
     }
 }
