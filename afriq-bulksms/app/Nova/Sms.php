@@ -68,7 +68,10 @@ class Sms extends Resource
                     7 => 'Flash (IS0-8559-1)'
                 ]
             )->rules('required')->required()->displayUsingLabels()->hideFromIndex(),
-            Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
+            Select::make('Source')
+                ->options(\App\Models\SenderId::pluck('sender_id', 'sender_id'))
+                ->rules('required', 'max:20')
+                ->sortable(),
             Text::make('Send to', 'destination')->sortable()->rules('max:12',  'starts_with:254', 'nullable')->nullable()->hideFromIndex(),
             File::make('Upload contacts to send', 'destination_file')
                 ->acceptedTypes('.csv, .xlsx')
@@ -126,7 +129,7 @@ class Sms extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            Actions\SendSingleSms::make()->standalone()->confirmButtonText('Send SMS')->confirmText('Create and save a message to send to your customers below'),
+            Actions\CreateAndSendSms::make()->standalone()->confirmButtonText('Send SMS')->confirmText('Create and save a message to send to your customers below'),
             Actions\SendBulkSms::make()->confirmButtonText('Send SMS')->confirmText('Do you want to send SMS to the selected row(s)?')
         ];
     }
