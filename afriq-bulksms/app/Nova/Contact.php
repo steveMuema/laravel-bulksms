@@ -6,6 +6,7 @@ use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Maatwebsite\LaravelNovaExcel\Actions\DownloadExcel;
 
 class Contact extends Resource
 {
@@ -91,7 +92,8 @@ class Contact extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            new Actions\ImportContacts
+            new Actions\ImportContacts,
+            new DownloadExcel,
 
         ];
     }
