@@ -57,10 +57,6 @@ class Sms extends Resource
 
         return [
             ID::make()->sortable(),
-            Select::make('Source')
-                ->options(\App\Models\SenderId::pluck('sender_id', 'sender_id'))
-                ->rules('required', 'max:20')
-                ->sortable(),
             Select::make('Type')->options(
                 [
                     0 => 'Plain Text (GSM)',
@@ -72,9 +68,9 @@ class Sms extends Resource
                     7 => 'Flash (IS0-8559-1)'
                 ]
             )->rules('required')->required()->displayUsingLabels()->hideFromIndex(),
-            // Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
-            Text::make('Destination')->sortable()->rules('max:12',  'starts_with:254', 'nullable')->nullable(),
-            File::make('Destination File', 'destination_file')
+            Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
+            Text::make('Send to', 'destination')->sortable()->rules('max:12',  'starts_with:254', 'nullable')->nullable()->hideFromIndex(),
+            File::make('Upload contacts to send', 'destination_file')
                 ->acceptedTypes('.csv, .xlsx')
                 ->storeAs(function (Request $request) {
                     return $request->destination_file->getClientOriginalName();

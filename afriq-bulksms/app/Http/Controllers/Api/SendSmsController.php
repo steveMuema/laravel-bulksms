@@ -15,16 +15,19 @@ function checkDestinationFile($destination_file) {
     foreach($reader as $row){
         array_push($contacts, $row['phone_number']);
     }
-    $data = implode(',', $contacts);
+    //URL-encode comma as %2C
+    $data = implode('%2C', $contacts);
     return $data;
 }
-
 function sendScheduled($type, $source, $destination, $message, $scheduled){
     $date = date('m/d/y', strtotime($scheduled));
     $time = date('h:i A', strtotime($scheduled));
+    $app_url = config('app.url');
+    $app_username = config('app.username');
+    $app_password = config('app.password');
     if($type == 0 || 1){
         try{
-            $text = "http://rslr.connectbind.com/bulksms/schedulemsg?username=qnet-oneconnect&password=Onec0nn!&type=12&destination=".$destination."&source=".$source."&message=".$message."&dlr=sasd&date=".$date."&time=".$time."&gmt=GMT +3";
+            $text = $app_url."schedulemsg?username=".$app_username."&password=".$app_password."&type=12&destination=".$destination."&source=".$source."&message=".$message."&dlr=sasd&date=".$date."&time=".$time."&gmt=GMT +3";
             $url = str_replace(' ', '%20', $text);
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -72,7 +75,7 @@ function sendScheduled($type, $source, $destination, $message, $scheduled){
             $data = bin2hex($message);
 
             // $text = mb_convert_encoding($data, 'UTF-16BE', 'UTF-8');
-            $url = strval("http://rslr.connectbind.com/bulksms/schedulemsg?username=qnet-oneconnect&password=Onec0nn!&type=".$type."&destination=".$destination."&source=".$source."&message=".$data."&dlr=1&date=".$date."&time=".$time."&gmt=GMT +3");
+            $url = strval($app_url."schedulemsg?username=".$app_username."&password=".$app_password."&type=".$type."&destination=".$destination."&source=".$source."&message=".$data."&dlr=1&date=".$date."&time=".$time."&gmt=GMT +3");
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -118,9 +121,12 @@ function sendScheduled($type, $source, $destination, $message, $scheduled){
 } 
 
 function sendNow($type, $source, $destination, $message) {
+    $app_url = config('app.url');
+    $app_username = env('APP_USERNAME');
+    $app_password = env('APP_PASSWORD');
     if($type == 0 || 1){
         try{
-            $text = "http://rslr.connectbind.com/bulksms/bulksms?username=qnet-oneconnect&password=Onec0nn!&type=".$type."&destination=".$destination."&source=".$source."&message=".$message."&dlr=1";
+            $text = $app_url."bulksms?username=".$app_username.'&password='.$app_password."&type=".$type."&destination=".$destination."&source=".$source."&message=".$message."&dlr=1";
             $url = str_replace(' ', '%20', $text);
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -169,7 +175,7 @@ function sendNow($type, $source, $destination, $message) {
             $data = bin2hex($message);
 
             // $text = mb_convert_encoding($data, 'UTF-16BE', 'UTF-8');
-            $url = strval("http://rslr.connectbind.com/bulksms/bulksms?username=qnet-oneconnect&password=Onec0nn!&type=".$type."&destination=".$destination."&source=".$source."&message=".$data."&dlr=1");
+            $url = strval($app_url."bulksms?username=".$app_username."&password=".$app_password."&type=".$type."&destination=".$destination."&source=".$source."&message=".$data."&dlr=1");
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
