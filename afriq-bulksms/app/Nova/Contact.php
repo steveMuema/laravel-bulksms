@@ -29,7 +29,7 @@ class Contact extends Resource
      * @var array
      */
     public static $search = [
-        'id','name','phone_number'
+        'id', 'name', 'phone_number'
     ];
 
     /**
@@ -91,7 +91,7 @@ class Contact extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            Actions\ImportExcelContacts::make()->standalone()->confirmButtonText('Import Contacts')->confirmText('Upload the excel file with your list of contacts below:'),
+            new Actions\ImportContacts
 
         ];
     }

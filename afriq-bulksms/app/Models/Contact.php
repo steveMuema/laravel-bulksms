@@ -8,10 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Contact extends Model
 {
     use HasFactory;
-    public function user() {
+    protected $fillable = [
+        'name',
+        'phone_number',
+        'user_id',
+        'address_book_id'
+    ];
+    public function user()
+    {
         return $this->belongsTo('App\Models\User');
     }
-    public function addressBook(){
+    public function addressBook()
+    {
         return $this->belongsTo('App\Models\AddressBook');
     }
 }
