@@ -69,18 +69,24 @@ class Sms extends Resource
                 ]
             )->rules('required')->required()->displayUsingLabels()->hideFromIndex(),
             Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
-            Text::make('Destination')->sortable()->rules('max:12',  'starts_with:254', 'nullable')->nullable(),
-            File::make('Destination File', 'destination_file')
+            Text::make('Send to', 'destination')->sortable()->rules('max:12',  'starts_with:254', 'nullable')->nullable()->hideFromIndex(),
+            File::make('Upload contacts to send', 'destination_file')
                 ->acceptedTypes('.csv, .xlsx')
                 ->storeAs(function (Request $request) {
                     return $request->destination_file->getClientOriginalName();
-                })
-                ->nullable()->help('Ensure your file has a column with header "phone_number"'),
+                })->hideFromIndex()
+                ->nullable()->help('Ensure your file has a column with header "phone_number'),
+            Boolean::make('Schedule', 'schedule')->trueValue('true')->falseValue('false'),
+            DateTime::make('Time to send message', 'scheduled')->default(now())->resolveUsing(function ($value, $resource) {
+                if ($resource->schedule) {
+                    return $value;
+                } else {
+                    return null;
+                };
+            }),
             CharCount::make('Message')
             ->rules('required')
             ->required(),
-            Boolean::make('Schedule', 'schedule')->trueValue('true')->falseValue('false'),
-            DateTime::make('Scheduled'),
         ];
     }
 
@@ -126,7 +132,7 @@ class Sms extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            Actions\SendSingleSms::make()->standalone()->confirmButtonText('Send SMS')->confirmText('Create and save a message to send to your customers below'),
+            Actions\CreateAndSendSms::make()->standalone()->confirmButtonText('Send SMS')->confirmText('Create and save a message to send to your customers below'),
             Actions\SendBulkSms::make()->confirmButtonText('Send SMS')->confirmText('Do you want to send SMS to the selected row(s)?')
         ];
     }

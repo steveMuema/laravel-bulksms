@@ -11,6 +11,10 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 class UploadContact extends Resource
 {
+    public static function createButtonLabel()
+    {
+        return 'Upload Contacts';
+    }
     /**
      * The model the resource corresponds to.
      *
@@ -50,7 +54,6 @@ class UploadContact extends Resource
                     return $request->file_path->getClientOriginalName();
                 })->showOnIndex()
                 ->nullable(),
-            // Action::make('Import CSV')->onlyOnDetail()->action(new ImportExcelContacts),
         ];
     }
 
@@ -96,7 +99,7 @@ class UploadContact extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            Actions\ImportExcelContacts::make()->standalone()->confirmButtonText('Import Contacts'),
+            Actions\ImportContacts::make()->standalone()->confirmButtonText('Import Contacts'),
         ];
     }
 }

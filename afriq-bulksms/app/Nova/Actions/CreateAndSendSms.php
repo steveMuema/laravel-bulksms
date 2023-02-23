@@ -18,7 +18,7 @@ use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class SendSingleSms extends Action
+class CreateAndSendSms extends Action
 {
     use InteractsWithQueue, Queueable;
 

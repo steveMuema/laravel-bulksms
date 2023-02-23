@@ -93,7 +93,7 @@ class Contact extends Resource
     {
         return [
             new Actions\ImportContacts,
-            new DownloadExcel,
+            // new DownloadExcel,
 
         ];
     }
