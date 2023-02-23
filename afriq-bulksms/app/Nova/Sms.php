@@ -43,7 +43,7 @@ class Sms extends Resource
      * @var array
      */
     public static $search = [
-        'id','source', 'destination'
+        'id', 'source', 'destination'
     ];
 
     /**
@@ -57,6 +57,10 @@ class Sms extends Resource
 
         return [
             ID::make()->sortable(),
+            Select::make('Source')
+                ->options(\App\Models\SenderId::pluck('sender_id', 'sender_id'))
+                ->rules('required', 'max:20')
+                ->sortable(),
             Select::make('Type')->options(
                 [
                     0 => 'Plain Text (GSM)',
@@ -65,10 +69,10 @@ class Sms extends Resource
                     3 => 'Reserved',
                     5 => 'Plain Text (ISO-8559-1)',
                     6 => 'Unicode Flash',
-                    7 => 'Flash (IS0-8559-1)'   
+                    7 => 'Flash (IS0-8559-1)'
                 ]
             )->rules('required')->required()->displayUsingLabels()->hideFromIndex(),
-            Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
+            // Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
             Text::make('Destination')->sortable()->rules('max:12',  'starts_with:254', 'nullable')->nullable(),
             File::make('Destination File', 'destination_file')
                 ->acceptedTypes('.csv, .xlsx')
@@ -77,8 +81,8 @@ class Sms extends Resource
                 })
                 ->nullable()->help('Ensure your file has a column with header "phone_number"'),
             CharCount::make('Message')
-            ->rules('required')
-            ->required(),
+                ->rules('required')
+                ->required(),
             Boolean::make('Schedule', 'schedule')->trueValue('true')->falseValue('false'),
             DateTime::make('Scheduled'),
         ];
