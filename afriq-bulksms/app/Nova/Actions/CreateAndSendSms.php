@@ -31,23 +31,23 @@ class CreateAndSendSms extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        
+
         // foreach($models as $model){
-            
-            $response = new SendSmsController();
-            $data = $response->sendSms($fields->type, $fields->source, $fields->destination,$fields->message, $fields->schedule, $fields->scheduled, $fields->destination_file);
-            Sms::create(
-                [
-                    'type' => $fields->type,
-                    'source' => $fields->source,
-                    'destination' => $fields->destination,
-                    'message' => $fields->message,
-                    'schedule' => $fields->schedule,
-                    'scheduled' => $fields->scheduled,
-                    'destination_file' => $fields->destination_file
-                ]
-            );
-            return Action::message($data);
+
+        $response = new SendSmsController();
+        $data = $response->sendSms($fields->type, $fields->source, $fields->destination, $fields->message, $fields->schedule, $fields->scheduled, $fields->destination_file);
+        Sms::create(
+            [
+                'type' => $fields->type,
+                'source' => $fields->source,
+                'destination' => $fields->destination,
+                'message' => $fields->message,
+                'schedule' => $fields->schedule,
+                'scheduled' => $fields->scheduled,
+                'destination_file' => $fields->destination_file
+            ]
+        );
+        return Action::message($data);
         // }
     }
 
@@ -70,11 +70,14 @@ class CreateAndSendSms extends Action
                     3 => 'Reserved',
                     5 => 'Plain Text (ISO-8559-1)',
                     6 => 'Unicode Flash',
-                    7 => 'Flash (IS0-8559-1)'   
+                    7 => 'Flash (IS0-8559-1)'
                 ]
             )->rules('required')->required()->displayUsingLabels(),
-            Text::make('Source')->sortable()->rules('required', 'max:20')->required(),
-            Text::make('Destination')->sortable()->rules( 'max:12',  'starts_with:254', 'nullable')->nullable()->help(
+            Select::make('Source')
+                ->options(\App\Models\SenderId::pluck('sender_id', 'sender_id'))
+                ->rules('required', 'max:20')
+                ->sortable(),
+            Text::make('Destination')->sortable()->rules('max:12',  'starts_with:254', 'nullable')->nullable()->help(
                 'seperate multiple mobile numbers using a comma (,) or upload csv file'
             )->placeholder('e.g 254712345678')->suggestions($list_contacts),
             // File::make('Destination File', 'destination_file')
@@ -83,11 +86,11 @@ class CreateAndSendSms extends Action
             //         return $request->destination_file->getClientOriginalName();
             //     })
             //     ->nullable()->help('Ensure your file has a column with header "phone_number"'),
-            Boolean::make('Schedule', 'schedule')->trueValue('true')->falseValue('false'),
+
             DateTime::make('Scheduled'),
             CharCount::make('Message')
-            ->rules('required')
-            ->required(),
-        ];  
+                ->rules('required')
+                ->required(),
+        ];
     }
 }

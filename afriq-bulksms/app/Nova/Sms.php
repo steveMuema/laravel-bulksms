@@ -82,7 +82,6 @@ class Sms extends Resource
             CharCount::make('Message')
                 ->rules('required')
                 ->required(),
-            Boolean::make('Schedule', 'schedule')->trueValue('true')->falseValue('false'),
             DateTime::make('Scheduled'),
         ];
     }
