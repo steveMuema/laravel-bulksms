@@ -12,4 +12,12 @@ class CharCount extends Field
      * @var string
      */
     public $component = 'char-count';
+
+    
+    public function withData($data)
+    {
+        return $this->withMeta([
+            'myData' => $data,
+        ]);
+    }
 }
