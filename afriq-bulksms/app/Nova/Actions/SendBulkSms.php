@@ -19,7 +19,7 @@ use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class SendBulkSms extends Action
+class SendBulkSms extends Action implements ShouldQueue
 {
     use InteractsWithQueue, Queueable;
 

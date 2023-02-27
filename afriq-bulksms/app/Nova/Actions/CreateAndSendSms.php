@@ -14,6 +14,7 @@ use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -35,20 +36,23 @@ class CreateAndSendSms extends Action
         // foreach($models as $model){
 
         $response = new SendSmsController();
-        $data = $response->sendSms($fields->type, $fields->source, $fields->destination, $fields->message, $fields->schedule, $fields->scheduled, $fields->destination_file);
-        Sms::create(
-            [
-                'type' => $fields->type,
-                'source' => $fields->source,
-                'destination' => $fields->destination,
-                'message' => $fields->message,
-                'schedule' => $fields->schedule,
-                'scheduled' => $fields->scheduled,
-                'destination_file' => $fields->destination_file
-            ]
-        );
-        return Action::message($data);
-        // }
+        $data = $response->sendSms($fields->type, $fields->source, $fields->destination, $fields->message, $fields->scheduled, $fields->destination_file);
+        // Sms::create(
+        //     [
+        //         'type' => $fields->type,
+        //         'source' => $fields->source,
+        //         'destination' => $fields->destination,
+        //         'message' => $fields->message,
+        //         'scheduled' => $fields->scheduled,
+        //         'destination_file' => $fields->destination_file
+        //     ]
+        // );
+        if($data == 'success'){
+            return Action::message("SMS sent successfully");;
+
+        }else{
+            return Action::danger('Error: ' .$data);
+        }
     }
 
     /**

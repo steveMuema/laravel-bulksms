@@ -28,9 +28,7 @@ class CheckCreditController extends Controller
             }
             $balance = explode(":", $response);
             if($response == 'AUTHORIZATION_FAILED'){
-                return 'User is inactive
-                or
-                The credentials provided (username or password or both) are wrong.';
+                return 'User is inactive or the credentials provided (username or password or both) are wrong.';
             }
             if($balance[0] == 'BALANCE'){
                 return $balance[1];
@@ -46,7 +44,6 @@ class CheckCreditController extends Controller
             }
         }catch (Exception $e){
             return "Failed:".$e->getMessage();
-            
         } 
     }
 }
