@@ -13,8 +13,8 @@ class SenderId extends Model
         'sender_id'
     ];
 
-    public function client()
+    public function user()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(User::class);
     }
 }

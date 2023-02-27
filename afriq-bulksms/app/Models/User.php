@@ -54,4 +54,8 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\Contact');
     }
+    public function senderid()
+    {
+        return $this->hasMany(SenderId::class);
+    }
 }

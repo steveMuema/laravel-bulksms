@@ -214,6 +214,26 @@ function sendNow($type, $source, $destination, $message)
     }
 }
 
+function deliveryReport()
+{
+    $app_url = config('app.url');
+    $url = $app_url . 'sSender=x&sMobileNo=x&sStatus=x&dtSubmit=x&dtDone=x&sMessageId=x&iCostPerSms=x&iCharge=x&iMCCMNC=x&iErrCode=x&sTagName%20=x&sUdf1%20=x&sUdf2%20=x';
+    // $callbackUrl = '';
+
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($curl);
+    curl_close($curl);
+    if ($result == 200) {
+        return 'Ok';
+    } elseif ($result == 202) {
+        return 'Accepted';
+    } else {
+        return 'Failed';
+    }
+}
+
 class SendSmsController extends Controller
 {
     public function sendSms($type = "12", $source = "", $destination = "", $message = "", $scheduled = "", $destination_file = null)

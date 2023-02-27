@@ -43,8 +43,9 @@ class SenderId extends Resource
     {
         return [
             ID::make()->sortable(),
-            Text::make('Sender Id', 'sender_id')->rules('required', 'string'),
-            BelongsTo::make('Client')
+            Text::make('Sender Id', 'sender_id')
+                ->rules('required', 'string'),
+            BelongsTo::make('User')
         ];
     }
 

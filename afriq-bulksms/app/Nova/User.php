@@ -70,11 +70,11 @@ class User extends Resource
             Text::make('Company')
                 ->sortable(),
 
-            Text::make('Phone Number','phone_number')
-                ->rules('required', 'max:10'),
-                
-            Text::make('Contact Person','contact_person'),
-            // Number::make('Acc','account_balance')->default(0.00),
+            Number::make('Phone Number', 'phone_number')
+                ->rules('required', 'digits:12'),
+
+            Text::make('Contact Person', 'contact_person'),
+            HasMany::make('SenderId'),
             HasMany::make('Sms'),
             HasMany::make('Contact')
         ];
