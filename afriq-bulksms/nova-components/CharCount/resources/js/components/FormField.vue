@@ -16,7 +16,7 @@
         :rows="4"
       ></textarea>
       <p class="my-2 text-light">
-       {{(value.length) }} characters. {{ ((value.length/maxLength)| 0) + 1 }} message(s) 
+       {{(value.length) }} characters. {{ ((value.length/maxLength)| 0) + 1 }} message(s)
       </p>
     </template>
   </DefaultField>
@@ -28,7 +28,7 @@ import { FormField, HandlesValidationErrors } from 'laravel-nova'
 export default {
   mixins: [FormField, HandlesValidationErrors],
 
-  props: ['resourceName', 'resourceId', 'field'],
+  props: ['resourceName', 'resourceId', 'field', 'myData'],
 
   data() {
     return {

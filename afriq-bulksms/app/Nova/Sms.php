@@ -3,8 +3,10 @@
 namespace App\Nova;
 
 use Afriq\CharCount\CharCount;
+use App\Http\Controllers\Api\CheckCreditController;
 use App\Nova\Actions\SendSmsAction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
@@ -80,12 +82,30 @@ class Sms extends Resource
                 })
                 ->nullable()->help('Ensure your file has a column with header "phone_number"'),
             CharCount::make('Message')
+                ->withData($this->myData())
                 ->rules('required')
                 ->required(),
             DateTime::make('Scheduled'),
+            Text::make('Status', 'dlr_status')->nullable()->hideWhenCreating()->hideWhenUpdating(),
+            Textarea::make('Message Field')
+                ->withMeta(['component' => 'message-component',
+                'props' => [
+                    'myData' => $this->myData(),
+                ],
+            ])
         ];
     }
 
+    public function myData()
+    {
+        $credits = new CheckCreditController();
+        $curr_balance = $credits->checkCredit();
+        // Return the data of the user to send to component
+        return [
+            'balance' => $curr_balance,
+            // '' => 'qux',
+        ];
+    }
     /**
      * Get the cards available for the request.
      *

@@ -42,7 +42,6 @@ class SendBulkSms extends Action implements ShouldQueue
                 $response = Action::message("SMS sent successfully");
             }
             else{
-                // $model->markAsFailed();
                 $this->markAsFailed($model, $data);
                 $response = Action::danger("Error: ".$data);
             }            
