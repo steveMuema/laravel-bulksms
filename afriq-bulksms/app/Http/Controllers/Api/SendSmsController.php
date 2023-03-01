@@ -35,7 +35,7 @@ function sendScheduled($type, $source, $destination, $message, $scheduled)
             $text = $app_url . "bulksms?username=" . $app_username . "&password=" . $app_password . "&type=12&destination=" . $destination . "&source=" . $source . "&message=" . $message . "&dlr=sasd&date=" . $date . "&time=" . $time . "&gmt=GMT +3";
             $url = str_replace(' ', '%20', $text);
             $schedule = new Schedule();
-            $schedule->call(function () use($url){
+            $schedule->call(function () use ($url) {
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -47,37 +47,37 @@ function sendScheduled($type, $source, $destination, $message, $scheduled)
                 $response = curl_exec($ch);
                 $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
-                if($http_status == '404') {
+                if ($http_status == '404') {
                     return "Failed to connect to the server";
                 }
-                $code = explode("|",$response);
-                if($code[0] == '1701'){
+                $code = explode("|", $response);
+                if ($code[0] == '1701') {
                     return 'success';
                 }
-                if($code[0] == '1702'){
+                if ($code[0] == '1702') {
                     return 'Invalid URL.';
                 }
-                if($code[0] == '1703'){
+                if ($code[0] == '1703') {
                     return 'Invalid value in username or password parameter.';
                 }
-                if($code[0] == '1025'){
+                if ($code[0] == '1025') {
                     return 'Insufficient credit';
                 }
-                if($code[0] == '1705'){
+                if ($code[0] == '1705') {
                     return 'Invalid message';
                 }
-                if($code[0] == '1706'){
+                if ($code[0] == '1706') {
                     return 'Invalid destination';
                 }
-                if($code[0] == '1707'){
+                if ($code[0] == '1707') {
                     return 'Invalid source';
                 }
-                if($code[0] == '1704'){
+                if ($code[0] == '1704') {
                     return 'Invalid message type.';
                 }
             })
-            ->timezone('Africa/Nairobi')
-            ->at(strval($time.$date));
+                ->timezone('Africa/Nairobi')
+                ->at(strval($time . $date));
             $output = \Illuminate\Support\Facades\Artisan::call('schedule:run');
             // \Illuminate\Support\Facades\Artisan::output(); // Get the output of the command
             return $output;
@@ -92,7 +92,7 @@ function sendScheduled($type, $source, $destination, $message, $scheduled)
             // $text = mb_convert_encoding($data, 'UTF-16BE', 'UTF-8');
             $url = strval($app_url . "bulksms?username=" . $app_username . "&password=" . $app_password . "&type=" . $type . "&destination=" . $destination . "&source=" . $source . "&message=" . $data . "&dlr=1&date=" . $date . "&time=" . $time . "&gmt=GMT +3");
             $schedule = new Schedule();
-            $schedule->call(function () use($url){
+            $schedule->call(function () use ($url) {
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -104,37 +104,37 @@ function sendScheduled($type, $source, $destination, $message, $scheduled)
                 $response = curl_exec($ch);
                 $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
-                if($http_status == '404') {
+                if ($http_status == '404') {
                     return "Failed to connect to the server";
                 }
-                $code = explode("|",$response);
-                if($code[0] == '1701'){
+                $code = explode("|", $response);
+                if ($code[0] == '1701') {
                     return 'success';
                 }
-                if($code[0] == '1702'){
+                if ($code[0] == '1702') {
                     return 'Invalid URL.';
                 }
-                if($code[0] == '1703'){
+                if ($code[0] == '1703') {
                     return 'Invalid value in username or password parameter.';
                 }
-                if($code[0] == '1025'){
+                if ($code[0] == '1025') {
                     return 'Insufficient credit';
                 }
-                if($code[0] == '1705'){
+                if ($code[0] == '1705') {
                     return 'Invalid message';
                 }
-                if($code[0] == '1706'){
+                if ($code[0] == '1706') {
                     return 'Invalid destination';
                 }
-                if($code[0] == '1707'){
+                if ($code[0] == '1707') {
                     return 'Invalid source';
                 }
-                if($code[0] == '1704'){
+                if ($code[0] == '1704') {
                     return 'Invalid message type.';
                 }
             })
-            ->timezone('Africa/Nairobi')
-            ->at(strval($time.$date));
+                ->timezone('Africa/Nairobi')
+                ->at(strval($time . $date));
             $output = \Illuminate\Support\Facades\Artisan::call('schedule:run');
             // \Illuminate\Support\Facades\Artisan::output(); // Get the output of the command
             return $output;
@@ -236,26 +236,6 @@ function sendNow($type, $source, $destination, $message)
         } catch (Exception $e) {
             return "Failed:" . $e->getMessage();
         }
-    }
-}
-
-function deliveryReport()
-{
-    $app_url = config('app.url');
-    $url = $app_url . 'sSender=x&sMobileNo=x&sStatus=x&dtSubmit=x&dtDone=x&sMessageId=x&iCostPerSms=x&iCharge=x&iMCCMNC=x&iErrCode=x&sTagName%20=x&sUdf1%20=x&sUdf2%20=x';
-    // $callbackUrl = '';
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_POST, true);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($curl);
-    curl_close($curl);
-    if ($result == 200) {
-        return 'Ok';
-    } elseif ($result == 202) {
-        return 'Accepted';
-    } else {
-        return 'Failed';
     }
 }
 
