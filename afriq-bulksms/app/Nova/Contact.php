@@ -43,8 +43,12 @@ class Contact extends Resource
     {
         return [
             ID::make()->sortable(),
-            Text::make('Name')->required()->rules('required'),
-            Text::make('Phone Number')->required()->rules('required'),
+            Text::make('Name')
+                ->required()
+                ->rules('required'),
+            Text::make('Phone Number')
+                ->required()
+                ->rules('required'),
             BelongsTo::make('Address Book'),
             BelongsTo::make('User')
         ];

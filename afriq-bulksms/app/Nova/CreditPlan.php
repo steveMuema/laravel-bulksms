@@ -43,7 +43,9 @@ class CreditPlan extends Resource
     {
         return [
             ID::make()->sortable(),
-            Text::make('Operator')->sortable()->required(),
+            Text::make('Operator')
+                ->sortable()
+                ->required(),
             Number::make('Price')->required()
         ];
     }

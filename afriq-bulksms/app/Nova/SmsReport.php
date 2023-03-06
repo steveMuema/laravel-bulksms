@@ -4,25 +4,23 @@ namespace App\Nova;
 
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class SenderId extends Resource
+class SmsReport extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\App\Models\SenderId>
+     * @var class-string<\App\Models\SmsReport>
      */
-    public static $model = \App\Models\SenderId::class;
+    public static $model = \App\Models\SmsReport::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'sender_id';
+    public static $title = 'id';
 
     /**
      * The columns that should be searched.
@@ -30,7 +28,7 @@ class SenderId extends Resource
      * @var array
      */
     public static $search = [
-        'sender_id', 'client_id'
+        'id',
     ];
 
     /**
@@ -43,11 +41,7 @@ class SenderId extends Resource
     {
         return [
             ID::make()->sortable(),
-            Text::make('Sender Id', 'sender_id')
-                ->rules('required', 'string')
-                ->creationRules('unique:sender_ids,sender_id')
-                ->updateRules('unique:sender_ids,sender_id,{{resourceId}}'),
-            BelongsTo::make('User')
+
         ];
     }
 

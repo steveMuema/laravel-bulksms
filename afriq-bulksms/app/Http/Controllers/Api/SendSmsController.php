@@ -8,7 +8,11 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Storage;
 use Spatie\SimpleExcel\SimpleExcelReader;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
+//models
+use App\Models\SmsReport;
+use App\Models\SmsLog;
 
 function checkDestinationFile($destination_file)
 {
@@ -47,10 +51,14 @@ function sendScheduled($type, $source, $destination, $message, $scheduled)
                 $response = curl_exec($ch);
                 $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
+
+
                 if ($http_status == '404') {
                     return "Failed to connect to the server";
                 }
+
                 $code = explode("|", $response);
+
                 if ($code[0] == '1701') {
                     return 'success';
                 }
@@ -146,47 +154,56 @@ function sendScheduled($type, $source, $destination, $message, $scheduled)
 
 function sendNow($type, $source, $destination, $message)
 {
-    $app_url = config('app.url');
-    $app_username = env('APP_USERNAME');
-    $app_password = env('APP_PASSWORD');
+
+
+    $sms_id = '';
+    $api_url = env('BULKSMS_API_URL');
+    $bulksms_username = env('BULKSMS_USERNAME');
+    $bulksms_password = env('BULKSMS_PASSWORD');
     if ($type == 0 || 1) {
         try {
-            $text = $app_url . "bulksms?username=" . $app_username . '&password=' . $app_password . "&type=" . $type . "&destination=" . $destination . "&source=" . $source . "&message=" . $message . "&dlr=1";
+
+            $text = $api_url . "bulksms?username=" . $bulksms_username . '&password=' . $bulksms_password . "&type=" . $type . "&destination=" . $destination . "&source=" . $source . "&message=" . $message . "&dlr=1";
             $url = str_replace(' ', '%20', $text);
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
             $response = curl_exec($ch);
             $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $check_error = curl_errno($ch);
             curl_close($ch);
+
             if ($http_status == '404') {
                 return "Failed to connect to the server";
             }
             $code = explode("|", $response);
+
             if ($code[0] == '1701') {
-                return 'success';
+                return logSms($code = 1701, $message = 'Sucess', $sms_id, $source);
             }
             if ($code[0] == '1702') {
-                return 'Invalid URL.';
+                return logSms($code = 1702, $message = 'Invalid URL', $sms_id, $source);
             }
             if ($code[0] == '1703') {
-                return 'Invalid value in username or password parameter.';
+                return logSms($code = 1703, $message = 'Invalid value in username or password parameter.', $sms_id = 1, $source);
             }
             if ($code[0] == '1025') {
-                return 'Insufficient credit';
+                Log::info('code is ' . $code[0]);
+                return logSms($code = 1025, $message = 'Insufficient credit', $sms_id, $source);
             }
             if ($code[0] == '1705') {
-                return 'Invalid message';
+                return logSms($code = 1705, $message = 'Invalid message', $sms_id, $source);
             }
             if ($code[0] == '1706') {
-                return 'Invalid destination';
+                return logSms($code = 1706, $message = 'Invalid destination', $sms_id, $source);
             }
             if ($code[0] == '1707') {
-                return 'Invalid source';
+                return logSms($code = 1707, $message = 'Invalid Source', $sms_id, $source);
             }
             if ($code[0] == '1704') {
-                return 'Invalid message type.';
+                return logSms($code = 1704, $message = 'Invalid message type', $sms_id, $source);
             }
         } catch (Exception $e) {
             return "Failed:" . $e->getMessage();
@@ -197,7 +214,7 @@ function sendNow($type, $source, $destination, $message)
             $data = bin2hex($message);
 
             // $text = mb_convert_encoding($data, 'UTF-16BE', 'UTF-8');
-            $url = strval($app_url . "bulksms?username=" . $app_username . "&password=" . $app_password . "&type=" . $type . "&destination=" . $destination . "&source=" . $source . "&message=" . $data . "&dlr=1");
+            $url = strval($api_url . "bulksms?username=" . $bulksms_username . "&password=" . $bulksms_password . "&type=" . $type . "&destination=" . $destination . "&source=" . $source . "&message=" . $data . "&dlr=1");
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -209,29 +226,30 @@ function sendNow($type, $source, $destination, $message)
                 return "Failed to connect to the server";
             }
             $code = explode("|", $response);
+
             if ($code[0] == '1701') {
-                return 'success';
+                return logSms($code = 1701, $message = 'Sucess', $sms_id, $source);
             }
             if ($code[0] == '1702') {
-                return 'Invalid URL.';
+                return logSms($code = 1702, $message = 'Invalid URL', $sms_id, $source);
             }
             if ($code[0] == '1703') {
-                return 'Invalid value in username or password parameter.';
+                return logSms($code = 1703, $message = 'Invalid value in username or password parameter.', $sms_id = 1, $source);
             }
             if ($code[0] == '1025') {
-                return 'Insufficient credit';
+                return logSms($code = 1025, $message = 'Insufficient credit', $sms_id, $source);
             }
             if ($code[0] == '1705') {
-                return 'Invalid message';
+                return logSms($code = 1705, $message = 'Invalid message', $sms_id, $source);
             }
             if ($code[0] == '1706') {
-                return 'Invalid destination';
+                return logSms($code = 1706, $message = 'Invalid destination', $sms_id, $source);
             }
             if ($code[0] == '1707') {
-                return 'Invalid source';
+                return logSms($code = 1707, $message = 'Invalid Source', $sms_id, $source);
             }
             if ($code[0] == '1704') {
-                return 'Invalid message type.';
+                return logSms($code = 1704, $message = 'Invalid message type', $sms_id, $source);
             }
         } catch (Exception $e) {
             return "Failed:" . $e->getMessage();
@@ -263,4 +281,15 @@ class SendSmsController extends Controller
             }
         }
     }
+}
+function logSms($code, $sms_status, $sms_id, $source)
+{
+    $report = SmsLog::create([
+        'code' => $code,
+        'sms_status' => $sms_status,
+        'sms_id' => 1,
+        'sender_id' => $source
+    ]);
+
+    return $report;
 }
