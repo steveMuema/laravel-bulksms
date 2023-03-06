@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Afriq\CharCount\CharCount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Menu\Menu;
@@ -19,13 +20,14 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function boot()
     {
         parent::boot();
+
         Nova::userMenu(function (Request $request, Menu $menu) {
-            if ($request->user()) {
-                $menu->append(
-                    MenuItem::make('Subscriber Dashboard')
-                        ->path('/subscribers/dashboard')
-                );
-            }
+            // if ($request->user()) {
+            //     $menu->append(
+            //         MenuItem::make('Subscriber Dashboard')
+            //             ->path('/subscribers/dashboard')
+            //     );
+            // }
 
             $menu->prepend(
                 MenuItem::make(
@@ -101,4 +103,5 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         //
     }
+
 }
