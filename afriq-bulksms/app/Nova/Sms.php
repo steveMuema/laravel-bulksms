@@ -37,7 +37,7 @@ class Sms extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'message';
 
     /**
      * The columns that should be searched.
@@ -88,11 +88,12 @@ class Sms extends Resource
             DateTime::make('Scheduled'),
             Text::make('Status', 'dlr_status')->nullable()->hideWhenCreating()->hideWhenUpdating(),
             Textarea::make('Message Field')
-                ->withMeta(['component' => 'message-component',
-                'props' => [
-                    'myData' => $this->myData(),
-                ],
-            ])
+                ->withMeta([
+                    'component' => 'message-component',
+                    'props' => [
+                        'myData' => $this->myData(),
+                    ],
+                ])
         ];
     }
 

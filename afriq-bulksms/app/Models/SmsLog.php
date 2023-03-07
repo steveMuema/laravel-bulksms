@@ -15,8 +15,13 @@ class SmsLog extends Model
         'sms_id',
         'sender_id'
     ];
-    public function sender()
+    public function senderId()
     {
-        return $this->belongsTo(SenderId::class);
+        return $this->belongsTo(SenderId::class, 'sender_id');
+    }
+
+    public function sms()
+    {
+        return $this->belongsTo(Sms::class);
     }
 }
