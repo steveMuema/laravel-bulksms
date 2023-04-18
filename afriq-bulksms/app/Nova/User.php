@@ -72,6 +72,9 @@ class User extends Resource
 
             Number::make('Phone Number', 'phone_number')
                 ->rules('required', 'digits:12'),
+            
+            Number::make('Account Balance', 'account_balance')
+                ->rules('required', 'max:6'),
 
             Text::make('Contact Person', 'contact_person'),
             HasMany::make('SenderId'),

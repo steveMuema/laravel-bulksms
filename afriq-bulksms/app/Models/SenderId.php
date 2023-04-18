@@ -10,7 +10,8 @@ class SenderId extends Model
     use HasFactory;
     protected $fillable = [
         'client_id',
-        'sender_id'
+        'sender_id',
+        'user_id'
     ];
 
     public function user()
