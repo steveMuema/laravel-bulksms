@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('destination');
             $table->string('message');
             $table->string('type');
-            $table->string('scheduled')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('scheduled')->useCurrent();
             $table->timestamps();
         });
     }

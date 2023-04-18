@@ -16,13 +16,8 @@ return new class extends Migration
         Schema::create('sender_ids', function (Blueprint $table) {
             $table->id();
             $table->string('sender_id');
-            $table->integer('client_id')
-                ->unsigned()
-                ->index();
-            $table->foreign('client_id')
-                ->references('id')
-                ->on('clients')
-                ->cascadeOnDelete();
+            $table->foreignId('user_id')
+                ->constrained();
             $table->timestamps();
         });
     }

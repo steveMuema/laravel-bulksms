@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('company')->nullable();
             $table->string('phone_number')->after('password');
             $table->string('contact_person')->after('phone_number');
-            $table->float('account_balance');
+            $table->float('account_balance')
+            ->default(0);
         });
     }
 
