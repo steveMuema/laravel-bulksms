@@ -18,7 +18,7 @@ class SmsLogPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->can('view sms logs');
     }
 
     /**
@@ -30,7 +30,7 @@ class SmsLogPolicy
      */
     public function view(User $user, SmsLog $smsLog)
     {
-        //
+        return $user->can('view sms log details');
     }
 
     /**
